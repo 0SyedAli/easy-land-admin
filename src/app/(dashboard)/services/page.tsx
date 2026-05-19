@@ -570,7 +570,7 @@ export default function ServicesPage() {
                   sx={{ width: 80, height: 80, bgcolor: '#f1f5f9', p: 1 }}
                 />
                 <Box>
-                  <Typography variant="h5" fontWeight="bold" color="#1e293b">{selectedService.name}</Typography>
+                  <Typography variant="h5" sx={{ fontWeight: 'bold' }} color="#1e293b">{selectedService.name}</Typography>
                   <Chip
                     label={selectedService.category?.name}
                     size="small"
@@ -578,31 +578,31 @@ export default function ServicesPage() {
                   />
                 </Box>
               </Box>
-
+ 
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12 }}>
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>Description</Typography>
                   <Typography variant="body1" color="#475569" sx={{ mt: 0.5 }}>{selectedService.description}</Typography>
                 </Grid>
-
+ 
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>Price</Typography>
-                  <Typography variant="h6" fontWeight="bold" color="#0f172a">${selectedService.price}</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }} color="#0f172a">${selectedService.price}</Typography>
                 </Grid>
-
+ 
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>Pricing Type</Typography>
                   <Typography variant="body1" sx={{ mt: 0.5, textTransform: 'capitalize' }}>{selectedService.pricingType?.replace('_', ' ')}</Typography>
                 </Grid>
-
+ 
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>Total Requests</Typography>
-                  <Typography variant="body1" fontWeight="bold" sx={{ mt: 0.5 }}>{selectedService.requests || 0}</Typography>
+                  <Typography variant="body1" sx={{ mt: 0.5, fontWeight: 'bold' }}>{selectedService.requests || 0}</Typography>
                 </Grid>
-
+ 
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>Total Revenue</Typography>
-                  <Typography variant="body1" fontWeight="bold" color="#2ECC71" sx={{ mt: 0.5 }}>${selectedService.revenue?.toFixed(2) || '0.00'}</Typography>
+                  <Typography variant="body1" sx={{ mt: 0.5, fontWeight: 'bold' }} color="#2ECC71">${selectedService.revenue?.toFixed(2) || '0.00'}</Typography>
                 </Grid>
 
                 <Grid size={{ xs: 12 }}>

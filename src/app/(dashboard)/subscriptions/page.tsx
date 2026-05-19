@@ -343,18 +343,18 @@ export default function SubscriptionPage() {
 
                   {/* Price */}
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="h5" component="span" fontWeight="800" color="#1e293b">${plan.price}</Typography>
+                    <Typography variant="h5" component="span" sx={{ fontWeight: '800' }} color="#1e293b">${plan.price}</Typography>
                     <Typography variant="body2" component="span" color="textSecondary"> / {plan.billingCycle}</Typography>
                   </Box>
-
+ 
                   {/* Subscribers */}
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
                     <PeopleOutlineIcon sx={{ fontSize: 18, color: '#94a3b8' }} />
-                    <Typography variant="body2" color="textSecondary" fontWeight="500">
+                    <Typography variant="body2" color="textSecondary" sx={{ fontWeight: '500' }}>
                       {plan.subscribersCount || 0} subscribers
                     </Typography>
                   </Box>
-
+ 
                   {/* Tier Badge */}
                   <Box sx={{ mb: 4 }}>
                     <Chip
@@ -369,10 +369,10 @@ export default function SubscriptionPage() {
                       }}
                     />
                   </Box>
-
+ 
                   {/* Features */}
                   <Box sx={{ flex: 1 }}>
-                    <Typography variant="body2" fontWeight="bold" color="#1e293b" sx={{ mb: 2 }}>Features:</Typography>
+                    <Typography variant="body2" color="#1e293b" sx={{ mb: 2, fontWeight: 'bold' }}>Features:</Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                       {plan.features.slice(0, 3).map((feature, i) => (
                         <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>

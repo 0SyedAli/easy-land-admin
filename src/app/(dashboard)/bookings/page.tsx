@@ -176,7 +176,7 @@ export default function BookingsPage() {
         ].map((stat, i) => (
           <Grid size={{ xl: "grow", lg: 3, sm: 6 }} key={i}>
             <Box className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-full">
-              <Typography variant="body2" color="textSecondary" fontWeight="500" sx={{ mb: 1 }}>{stat.label}</Typography>
+              <Typography variant="body2" color="textSecondary" sx={{ mb: 1, fontWeight: '500' }}>{stat.label}</Typography>
               <Typography variant="h4" sx={{ fontWeight: 'bold' }} className={stat.color}>{stat.value}</Typography>
             </Box>
           </Grid>
@@ -378,10 +378,10 @@ export default function BookingsPage() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                       <Avatar src={selectedBooking.provider?.profile} sx={{ width: 48, height: 48 }} />
                       <Box>
-                        <Typography variant="body2" fontWeight="700">{selectedBooking.provider?.name}</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: '700' }}>{selectedBooking.provider?.name}</Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', color: '#f59e0b' }}>
                           <span className="text-xs mr-1">★</span>
-                          <Typography variant="caption" fontWeight="bold">4.9 • 203 jobs</Typography>
+                          <Typography variant="caption" sx={{ fontWeight: 'bold' }}>4.9 • 203 jobs</Typography>
                         </Box>
                       </Box>
                     </Box>
@@ -392,33 +392,33 @@ export default function BookingsPage() {
                   </Box>
                 </Grid>
 
-                <Grid xs={12}>
+                <Grid size={12}>
                   <Box sx={{ p: 3, borderRadius: 4, border: '1px solid #f1f5f9', bgcolor: '#fff' }}>
                     <Typography variant="body2" color="#64748b" sx={{ mb: 3, fontWeight: "700" }}>Service Details</Typography>
                     <Grid container spacing={{ xs: 1, sm: 2, md: 3 }}>
-                      <Grid xs={4}>
+                      <Grid size={4}>
                         <Typography variant="caption" color="textSecondary">Service Type</Typography>
                         <Typography variant="body2" sx={{ fontWeight: "500" }}>{selectedBooking.service?.name}</Typography>
                       </Grid>
-                      <Grid xs={4}>
+                      <Grid size={4}>
                         <Typography variant="caption" color="textSecondary">Date</Typography>
                         <Typography variant="body2" sx={{ fontWeight: "500" }}>
                           {new Date(selectedBooking.scheduledAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </Typography>
                       </Grid>
-                      <Grid xs={4}>
+                      <Grid size={4}>
                         <Typography variant="caption" color="textSecondary">Time</Typography>
                         <Typography variant="body2" sx={{ fontWeight: "500" }}>
                           {new Date(selectedBooking.scheduledAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                         </Typography>
                       </Grid>
-                      <Grid xs={4}>
+                      <Grid size={4}>
                         <Typography variant="caption" color="textSecondary">Amount</Typography>
                         <Typography variant="body2" sx={{ fontWeight: "500", color: "#22C55E" }}>
                           ${selectedBooking.amount || selectedBooking.service?.price}
                         </Typography>
                       </Grid>
-                      <Grid xs={8}>
+                      <Grid size={8}>
                         <Typography variant="caption" color="textSecondary">Location</Typography>
                         <Typography variant="body2" sx={{ fontWeight: "500" }}>30.2775, -97.7403</Typography>
                       </Grid>

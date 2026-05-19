@@ -14,7 +14,6 @@ import {
   DialogContent,
   Typography,
   Grid,
-  Divider,
   Box,
   TablePagination,
   Button,
@@ -335,34 +334,34 @@ export default function UsersPage() {
 
               {/* Information Grid */}
               <Grid container spacing={4}>
-                <Grid xs={6}>
-                  <Typography variant="caption" fontWeight="bold" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block' }}>Phone</Typography>
-                  <Typography variant="body1" fontWeight="600" color="#334155">{selectedUser.phone || 'N/A'}</Typography>
+                <Grid size={6}>
+                  <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Phone</Typography>
+                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '600' }}>{selectedUser.phone || 'N/A'}</Typography>
                 </Grid>
-                <Grid xs={6}>
-                  <Typography variant="caption" fontWeight="bold" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block' }}>Land Type</Typography>
-                  <Typography variant="body1" fontWeight="600" color="#334155" sx={{ textTransform: 'capitalize' }}>{selectedUser.property || 'N/A'}</Typography>
-                </Grid>
-
-                <Grid xs={12}>
-                  <Typography variant="caption" fontWeight="bold" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block' }}>Address</Typography>
-                  <Typography variant="body1" fontWeight="600" color="#334155">{selectedUser.location?.address || 'N/A'}</Typography>
+                <Grid size={6}>
+                  <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Land Type</Typography>
+                  <Typography variant="body1" color="#334155" sx={{ textTransform: 'capitalize', fontWeight: '600' }}>{selectedUser.property || 'N/A'}</Typography>
                 </Grid>
 
-                <Grid xs={6}>
-                  <Typography variant="caption" fontWeight="bold" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block' }}>Total Bookings</Typography>
-                  <Typography variant="body1" fontWeight="600" color="#334155">{selectedUser.totalJobs || 0}</Typography>
+                <Grid size={12}>
+                  <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Address</Typography>
+                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '600' }}>{selectedUser.location?.address || 'N/A'}</Typography>
                 </Grid>
-                <Grid xs={6}>
-                  <Typography variant="caption" fontWeight="bold" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block' }}>Join Date</Typography>
-                  <Typography variant="body1" fontWeight="600" color="#334155">
+
+                <Grid size={6}>
+                  <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Total Bookings</Typography>
+                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '600' }}>{selectedUser.totalJobs || 0}</Typography>
+                </Grid>
+                <Grid size={6}>
+                  <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Join Date</Typography>
+                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '600' }}>
                     {new Date(selectedUser.createdAt).toISOString().split('T')[0]}
                   </Typography>
                 </Grid>
 
-                <Grid xs={12}>
-                  <Typography variant="caption" fontWeight="bold" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block' }}>Location</Typography>
-                  <Typography variant="body1" fontWeight="600" color="#334155">
+                <Grid size={12}>
+                  <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Location</Typography>
+                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '600' }}>
                     {/* Mock coordinates if not available to match design */}
                     30.2672, -97.7431
                   </Typography>
