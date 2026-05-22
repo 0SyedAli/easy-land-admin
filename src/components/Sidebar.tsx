@@ -37,7 +37,7 @@ export default function Sidebar() {
     <div className="w-[300px] bg-[#2f6f1f] text-white flex flex-col min-h-screen">
       {/* Logo Area */}
       <div className="p-6 flex items-center gap-3">
-        <Image src="/logo.png" alt="Logo" width={300} height={150} />
+        <Image src="/images/logo.png" alt="Logo" width={300} height={150} />
       </div>
 
       {/* Navigation */}
