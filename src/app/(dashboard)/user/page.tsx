@@ -44,6 +44,7 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
   // Pagination state
   const [page, setPage] = useState(0);
@@ -60,7 +61,13 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await api.get('user/all');
+      const response = await api.get('user/all', {
+        params: {
+          page: page + 1,
+          limit: rowsPerPage,
+          search: debouncedSearchTerm || undefined
+        }
+      });
       if (response.data && response.data.users) {
         setUsers(response.data.users);
         setTotalUsers(response.data.pagination?.total || response.data.users.length);
@@ -74,8 +81,16 @@ export default function UsersPage() {
   };
 
   useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 400);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+  useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [page, rowsPerPage, debouncedSearchTerm]);
 
   const handleRowClick = (user: User) => {
     setSelectedUser(user);
@@ -127,13 +142,10 @@ export default function UsersPage() {
     setDeleteDialogOpen(true);
   };
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.phone?.includes(searchTerm) ||
-    (user.location?.address && user.location.address.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-
-  const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setPage(0);
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -181,14 +193,30 @@ export default function UsersPage() {
             className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2f6f1f]/20 focus:border-[#2f6f1f] transition-all"
             placeholder="Search by name, phone, or address..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
 
         {/* Error / Loading State */}
         {loading ? (
-          <div className="flex justify-center py-12">
-            <CircularProgress sx={{ color: '#2f6f1f' }} />
+          <div className="animate-pulse space-y-6">
+            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="h-32 bg-white rounded-2xl border border-gray-100" />
+              <div className="h-32 bg-white rounded-2xl border border-gray-100" />
+              <div className="h-32 bg-white rounded-2xl border border-gray-100" />
+            </div> */}
+            <div className="bg-white rounded-2xl p-6 border border-gray-100">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex items-center gap-4 py-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-200" />
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-1/3 mb-2" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                  </div>
+                  <div className="w-24 h-4 bg-gray-200 rounded" />
+                </div>
+              ))}
+            </div>
           </div>
         ) : error ? (
           <Alert severity="error">{error}</Alert>
@@ -209,7 +237,7 @@ export default function UsersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {paginatedUsers.map((user) => (
+                  {users.map((user) => (
                     <tr
                       key={user._id}
                       className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
@@ -261,7 +289,7 @@ export default function UsersPage() {
                       </td>
                     </tr>
                   ))}
-                  {paginatedUsers.length === 0 && (
+                  {users.length === 0 && (
                     <tr>
                       <td colSpan={8} className="py-8 text-center text-gray-500">
                         No users found.
@@ -271,10 +299,10 @@ export default function UsersPage() {
                 </tbody>
               </table>
             </div>
-            {filteredUsers.length > 10 && (
+            {totalUsers > 10 && (
               <TablePagination
                 component="div"
-                count={filteredUsers.length}
+                count={totalUsers}
                 page={page}
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}

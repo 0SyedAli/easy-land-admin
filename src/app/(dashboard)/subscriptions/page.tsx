@@ -67,6 +67,7 @@ export default function SubscriptionPage() {
   const [stats, setStats] = useState<SubscriptionStats | null>(null);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
 
   // Modal states
@@ -88,7 +89,11 @@ export default function SubscriptionPage() {
   const fetchPlans = async () => {
     try {
       setLoading(true);
-      const response = await api.get('subscription');
+      const response = await api.get('subscription', {
+        params: {
+          search: debouncedSearchTerm || undefined
+        }
+      });
       if (response.data && response.data.plans) {
         setPlans(response.data.plans);
       }
@@ -112,9 +117,17 @@ export default function SubscriptionPage() {
   };
 
   useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 400);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+  useEffect(() => {
     fetchPlans();
     fetchStats();
-  }, []);
+  }, [debouncedSearchTerm]);
 
   const handleOpenModal = (plan?: SubscriptionPlan) => {
     if (plan) {
@@ -205,12 +218,11 @@ export default function SubscriptionPage() {
     }
   };
 
-  const filteredPlans = plans.filter(plan => {
-    const matchesSearch = plan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      plan.tier.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = activeFilter === 'all' || plan.status === activeFilter;
-    return matchesSearch && matchesFilter;
-  });
+  const filteredPlans = plans.filter(plan => activeFilter === 'all' || plan.status === activeFilter);
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+  };
 
   return (
     <div className="flex flex-col h-full bg-[#f8fafc]">
@@ -246,24 +258,42 @@ export default function SubscriptionPage() {
       {/* Stats Cards */}
       <Box sx={{ mb: 4 }}>
         <Grid container spacing={3}>
-          {[
-            { label: 'Monthly Revenue', value: `$${stats?.monthlyRevenue || 0}`, icon: <AttachMoneyIcon />, color: '#4caf50', bg: '#e8f5e9' },
-            { label: 'Total Subscribers', value: stats?.totalUniqueSubscribers || 0, icon: <PeopleOutlineIcon />, color: '#2196f3', bg: '#e3f2fd' },
-            { label: 'Active Plans', value: stats?.activePlansCount || 0, icon: <FactCheckIcon />, color: '#9c27b0', bg: '#f3e5f5' },
-            { label: 'Active Subscribers', value: stats?.activeSubscribersCount || 0, icon: <TimelineIcon />, color: '#ff9800', bg: '#fff3e0' },
-          ].map((stat, i) => (
-            <Grid key={i} size={{ xs: 12, sm: 6, md: 3 }}>
-              <Box className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                <Box sx={{ bgcolor: stat.bg, p: 1.5, borderRadius: 3, color: stat.color, display: 'flex' }}>
-                  {stat.icon}
+          {loading ? (
+            // show skeletons for the top stat cards while loading
+            Array.from({ length: 4 }).map((_, i) => (
+              <Grid key={i} size={{ xl: 'grow', lg: 3, sm: 6 }}>
+                <div className="bg-white rounded-3xl p-6 border border-gray-100/80 shadow-xs flex flex-col justify-between h-[100px] animate-pulse">
+                  <div className="flex justify-between items-start">
+                    <div className="w-12 h-12 bg-gray-200 rounded-2xl"></div>
+                    <div className="space-y-3 w-2/3">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mt-4"></div>
+                </div>
+              </Grid>
+            ))
+          ) : (
+            [
+              { label: 'Monthly Revenue', value: `$${stats?.monthlyRevenue || 0}`, icon: <AttachMoneyIcon />, color: '#4caf50', bg: '#e8f5e9' },
+              { label: 'Total Subscribers', value: stats?.totalUniqueSubscribers || 0, icon: <PeopleOutlineIcon />, color: '#2196f3', bg: '#e3f2fd' },
+              { label: 'Active Plans', value: stats?.activePlansCount || 0, icon: <FactCheckIcon />, color: '#9c27b0', bg: '#f3e5f5' },
+              { label: 'Active Subscribers', value: stats?.activeSubscribersCount || 0, icon: <TimelineIcon />, color: '#ff9800', bg: '#fff3e0' },
+            ].map((stat, i) => (
+              <Grid key={i} size={{ xs: 12, sm: 6, md: 3 }}>
+                <Box className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                  <Box sx={{ bgcolor: stat.bg, p: 1.5, borderRadius: 3, color: stat.color, display: 'flex' }}>
+                    {stat.icon}
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="textSecondary" sx={{ fontWeight: "500" }}>{stat.label}</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: "bold" }} color="#1e293b">{stat.value}</Typography>
+                  </Box>
                 </Box>
-                <Box>
-                  <Typography variant="body2" color="textSecondary" sx={{ fontWeight: "500" }}>{stat.label}</Typography>
-                  <Typography variant="h5" sx={{ fontWeight: "bold" }} color="#1e293b">{stat.value}</Typography>
-                </Box>
-              </Box>
-            </Grid>
-          ))}
+              </Grid>
+            ))
+          )}
         </Grid>
       </Box>
 
@@ -279,7 +309,7 @@ export default function SubscriptionPage() {
               className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-transparent rounded-xl focus:outline-none focus:bg-gray-100 transition-all text-sm"
               placeholder="Search plans..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
           </div>
           <Box className="flex bg-gray-50 p-1 rounded-xl">
@@ -299,15 +329,27 @@ export default function SubscriptionPage() {
 
       {/* Plan Cards Grid */}
       <Box sx={{ flex: 1 }}>
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <CircularProgress sx={{ color: '#0f172a' }} />
-          </div>
-        ) : error ? (
-          <Alert severity="error">{error}</Alert>
-        ) : (
-          <Grid container spacing={4}>
-            {filteredPlans.map((plan) => (
+
+        <Grid container spacing={4}>
+          {loading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <Grid key={i} size={{ xl: 'grow', lg: 3, sm: 6 }}>
+                <div className="bg-white rounded-3xl p-6 border border-gray-100/80 shadow-xs flex flex-col justify-between h-[500px] animate-pulse">
+                  <div className="flex justify-between items-start">
+                    <div className="space-y-3 w-2/3">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                    <div className="w-12 h-12 bg-gray-200 rounded-2xl"></div>
+                  </div>
+                  {/* <div className="h-4 bg-gray-200 rounded w-1/2 mt-4"></div> */}
+                </div>
+              </Grid>
+            ))
+          ) : error ? (
+            <Alert severity="error">{error}</Alert>
+          ) : (
+            filteredPlans.map((plan) => (
               <Grid key={plan._id} size={{ xs: 12, md: 4 }}>
                 <Box className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-full flex flex-col relative transition-all hover:shadow-lg hover:border-gray-200">
                   {/* Status Badge & Toggle */}
@@ -346,7 +388,7 @@ export default function SubscriptionPage() {
                     <Typography variant="h5" component="span" sx={{ fontWeight: '800' }} color="#1e293b">${plan.price}</Typography>
                     <Typography variant="body2" component="span" color="textSecondary"> / {plan.billingCycle}</Typography>
                   </Box>
- 
+
                   {/* Subscribers */}
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
                     <PeopleOutlineIcon sx={{ fontSize: 18, color: '#94a3b8' }} />
@@ -354,7 +396,7 @@ export default function SubscriptionPage() {
                       {plan.subscribersCount || 0} subscribers
                     </Typography>
                   </Box>
- 
+
                   {/* Tier Badge */}
                   <Box sx={{ mb: 4 }}>
                     <Chip
@@ -369,7 +411,7 @@ export default function SubscriptionPage() {
                       }}
                     />
                   </Box>
- 
+
                   {/* Features */}
                   <Box sx={{ flex: 1 }}>
                     <Typography variant="body2" color="#1e293b" sx={{ mb: 2, fontWeight: 'bold' }}>Features:</Typography>
@@ -412,9 +454,9 @@ export default function SubscriptionPage() {
                   </Box>
                 </Box>
               </Grid>
-            ))}
-          </Grid>
-        )}
+            ))
+          )}
+        </Grid>
       </Box>
 
       {/* Create/Edit Modal */}

@@ -15,9 +15,11 @@
     "@mui/material": "^9.0.0",
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.15.2",
+    "chart.js": "^4.5.1",
     "js-cookie": "^3.0.5",
     "next": "^16.2.6",
     "react": "19.2.4",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.4"
   },
   "devDependencies": {

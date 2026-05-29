@@ -55,6 +55,7 @@ export default function ProviderPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -70,7 +71,13 @@ export default function ProviderPage() {
   const fetchProviders = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`landscraper/all?page=${page + 1}&limit=${rowsPerPage}`, {});
+      const response = await api.get('landscraper/all', {
+        params: {
+          page: page + 1,
+          limit: rowsPerPage,
+          search: debouncedSearchTerm || undefined
+        }
+      });
       if (response.data && response.data.landscrapers) {
         setProviders(response.data.landscrapers);
         setTotalProviders(response.data.pagination?.total || response.data.landscrapers.length);
@@ -84,8 +91,16 @@ export default function ProviderPage() {
   };
 
   useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 400);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+  useEffect(() => {
     fetchProviders();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, debouncedSearchTerm]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -152,11 +167,10 @@ export default function ProviderPage() {
     setDeleteDialogOpen(true);
   };
 
-  const filteredProviders = providers.filter((provider) =>
-    provider.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    provider.phone?.includes(searchTerm) ||
-    (provider.location?.address && provider.location.address.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setPage(0);
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -195,14 +209,31 @@ export default function ProviderPage() {
             className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2f6f1f]/20 focus:border-[#2f6f1f] transition-all"
             placeholder="Search by name, phone, or address..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
 
         {/* Error / Loading State */}
         {loading ? (
-          <div className="flex justify-center py-12">
-            <CircularProgress sx={{ color: '#2f6f1f' }} />
+          <div className="animate-pulse space-y-4">
+            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="h-40 bg-white rounded-2xl border border-gray-100" />
+              <div className="h-40 bg-white rounded-2xl border border-gray-100" />
+              <div className="h-40 bg-white rounded-2xl border border-gray-100" />
+            </div> */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex items-center gap-4 py-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-200" />
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded w-1/3 mb-2" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                  </div>
+                  <div className="w-24 h-4 bg-gray-200 rounded" />
+                </div>
+              ))}
+            </div>
           </div>
         ) : error ? (
           <Alert severity="error">{error}</Alert>
@@ -223,7 +254,7 @@ export default function ProviderPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredProviders.map((provider) => (
+                  {providers.map((provider) => (
                     <tr
                       key={provider._id}
                       className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
@@ -231,7 +262,13 @@ export default function ProviderPage() {
                     >
                       <td className="py-4 flex items-center gap-3">
                         {provider.profile ? (
-                          <img src={provider.profile} alt={provider.name} className="w-10 h-10 rounded-full object-cover" />
+                          // <img src={provider.profile} alt={provider.name} className="w-10 h-10 rounded-full object-cover" />
+                          <Avatar
+                            src={provider.profile}
+                            className="w-10 h-10 rounded-full object-cover"
+                          >
+                            {provider.name.charAt(0)}
+                          </Avatar>
                         ) : (
                           <div className="w-10 h-10 rounded-full bg-[#82b83b] flex items-center justify-center text-white font-bold text-lg">
                             {provider.name.charAt(0).toUpperCase()}
@@ -275,7 +312,7 @@ export default function ProviderPage() {
                       </td>
                     </tr>
                   ))}
-                  {filteredProviders.length === 0 && (
+                  {providers.length === 0 && (
                     <tr>
                       <td colSpan={8} className="py-8 text-center text-gray-500">
                         No providers found.

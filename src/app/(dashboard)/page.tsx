@@ -41,6 +41,27 @@ interface ServiceDistributionItem {
   color: string;
 }
 
+// Interfaces for Activity Log API
+interface ActivityLog {
+  _id: string;
+  user: string;
+  userModel: string;
+  name: string;
+  action: string;
+  description: string;
+  type: string;
+  ipAddress: string;
+  resourceId: string;
+  resourceModel: string;
+  metadata?: {
+    providerId?: string;
+    serviceId?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 // Helper to draw SVG Pie slices
 const getPieSlicePath = (cx: number, cy: number, r: number, startAngle: number, endAngle: number) => {
   if (endAngle - startAngle >= 359.9) {
@@ -177,7 +198,7 @@ const ServiceDistributionChart = ({ services }: { services: ServiceDistributionI
   const slices = activeServices.map((service, index) => {
     const angle = (service.percentage / 100) * 360;
     const startAngle = cumulativeAngle;
-    const endAngle = cumulativeAngle + angle;
+    const endAngle  = cumulativeAngle + angle;
     cumulativeAngle = endAngle;
 
     const midAngle = startAngle + angle / 2;
@@ -342,22 +363,63 @@ const mockActivities = [
   }
 ];
 
-const RecentActivityList = () => {
+// Helper function to calculate relative time
+const getRelativeTime = (dateString: string): string => {
+  const now = new Date();
+  const date = new Date(dateString);
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (seconds < 60) return 'just now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)} hour${Math.floor(seconds / 3600) > 1 ? 's' : ''} ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)} day${Math.floor(seconds / 86400) > 1 ? 's' : ''} ago`;
+  return date.toLocaleDateString();
+};
+
+// Helper function to get dot color based on activity type
+const getDotColorByType = (type: string): string => {
+  const typeColorMap: Record<string, string> = {
+    'Booking': 'bg-emerald-500',
+    'User': 'bg-blue-500',
+    'Provider': 'bg-purple-500',
+    'Payment': 'bg-green-500',
+    'Review': 'bg-amber-500',
+  };
+  return typeColorMap[type] || 'bg-gray-500';
+};
+
+const RecentActivityList = ({ activities = [] }: { activities?: ActivityLog[] }) => {
+  const displayActivities = activities.length > 0 ? activities : mockActivities;
+
   return (
     <div className="flex-1 flex flex-col justify-between">
-      <div className="divide-y divide-gray-100 flex-1">
-        {mockActivities.map((act) => (
-          <div key={act.id} className="flex justify-between items-center py-3.5 first:pt-1 last:pb-1">
-            <div className="flex gap-4 items-start">
-              <span className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${act.dotColor}`}></span>
-              <div>
-                <h4 className="font-semibold text-gray-800 text-sm tracking-wide">{act.title}</h4>
-                <p className="text-xs text-gray-400 font-medium mt-0.5">{act.subtitle}</p>
+      <div className="divide-y divide-gray-100 flex-1 max-h-[400px] overflow-y-auto pe-2">
+        {(activities.length > 0
+          ? activities.map((act) => (
+            <div key={act._id} className="flex justify-between items-center py-3.5 first:pt-1 last:pb-1">
+              <div className="flex gap-4 items-start">
+                <span className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${getDotColorByType(act.type)}`}></span>
+                <div>
+                  <h4 className="font-semibold text-gray-800 text-sm tracking-wide">{act.action}</h4>
+                  <p className="text-xs text-gray-400 font-medium mt-0.5">{act.name}</p>
+                </div>
               </div>
+              <span className="text-xs text-gray-400 font-medium">{getRelativeTime(act.createdAt)}</span>
             </div>
-            <span className="text-xs text-gray-400 font-medium">{act.time}</span>
-          </div>
-        ))}
+          ))
+          : mockActivities.map((act) => (
+            <div key={act.id} className="flex justify-between items-center py-3.5 first:pt-1 last:pb-1">
+              <div className="flex gap-4 items-start">
+                <span className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${act.dotColor}`}></span>
+                <div>
+                  <h4 className="font-semibold text-gray-800 text-sm tracking-wide">{act.title}</h4>
+                  <p className="text-xs text-gray-400 font-medium mt-0.5">{act.subtitle}</p>
+                </div>
+              </div>
+              <span className="text-xs text-gray-400 font-medium">{act.time}</span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
@@ -367,6 +429,7 @@ const RecentActivityList = () => {
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [services, setServices] = useState<ServiceDistributionItem[]>([]);
+  const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -376,9 +439,10 @@ export default function Dashboard() {
         setLoading(true);
         setError('');
 
-        const [statsRes, servicesRes] = await Promise.all([
+        const [statsRes, servicesRes, activitiesRes] = await Promise.all([
           api.get('analytics/dashboard'),
-          api.get('analytics/service-distribution')
+          api.get('analytics/service-distribution'),
+          api.get('activity-log')
         ]);
 
         if (statsRes.data?.success && statsRes.data?.stats) {
@@ -391,6 +455,12 @@ export default function Dashboard() {
           setServices(servicesRes.data.services);
         } else {
           throw new Error(servicesRes.data?.message || 'Failed to fetch service distribution.');
+        }
+
+        if (activitiesRes.data?.success && activitiesRes.data?.logs) {
+          setActivities(activitiesRes.data.logs);
+        } else {
+          throw new Error(activitiesRes.data?.message || 'Failed to fetch activity logs.');
         }
       } catch (err: any) {
         console.error('Error fetching dashboard data:', err);
@@ -521,7 +591,7 @@ export default function Dashboard() {
             {loading ? (
               <ActivitySkeleton />
             ) : (
-              <RecentActivityList />
+              <RecentActivityList activities={activities} />
             )}
           </div>
         </div>

@@ -37,6 +37,31 @@ interface Category {
   name: string;
 }
 
+interface LandscraperLocation {
+  type?: string;
+  coordinates?: number[];
+  address?: string;
+}
+
+interface LandscraperWorkingHours {
+  isOpen: boolean;
+  startTime?: string;
+  endTime?: string;
+}
+
+interface Landscraper {
+  profile: any;
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: string;
+  location?: LandscraperLocation;
+  pricingPerKm?: number;
+  averageRating?: number;
+  workingHours?: Record<string, LandscraperWorkingHours>;
+}
+
 interface Service {
   _id: string;
   name: string;
@@ -52,12 +77,17 @@ interface Service {
   createdAt: string;
 }
 
+interface ServiceDetails extends Omit<Service, 'landscrapers'> {
+  landscrapers: Landscraper[];
+}
+
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
   // Modal states
   const [modalOpen, setModalOpen] = useState(false);
@@ -65,8 +95,10 @@ export default function ServicesPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const [editingService, setEditingService] = useState<Service | null>(null);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceDetails | null>(null);
   const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState('');
 
   const [formLoading, setFormLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -87,7 +119,11 @@ export default function ServicesPage() {
     try {
       setLoading(true);
       const [servicesRes, categoriesRes] = await Promise.all([
-        api.get('service'),
+        api.get('service', {
+          params: {
+            search: debouncedSearchTerm || undefined
+          }
+        }),
         api.get('category').catch(() => ({ data: { categories: [] } })) // Fallback if no category endpoint
       ]);
 
@@ -114,8 +150,16 @@ export default function ServicesPage() {
   };
 
   useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 400);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+  useEffect(() => {
     fetchData();
-  }, []);
+  }, [debouncedSearchTerm]);
 
   const handleOpenModal = (service?: Service) => {
     if (service) {
@@ -145,14 +189,41 @@ export default function ServicesPage() {
     setModalOpen(true);
   };
 
-  const handleViewDetail = (service: Service) => {
-    setSelectedService(service);
+  const handleViewDetail = async (service: Service) => {
+    setDetailLoading(true);
+    setDetailError('');
+    setSelectedService(null);
     setDetailModalOpen(true);
+
+    try {
+      const response = await api.get(`service/${service._id}`);
+      const payload = response?.data?.service ?? response?.data ?? {};
+
+      setSelectedService({
+        ...service,
+        ...payload,
+        category: payload?.category ?? service.category,
+        landscrapers: Array.isArray(payload?.landscrapers) ? payload.landscrapers : []
+      });
+    } catch (err) {
+      console.error('Failed to fetch service details:', err);
+      setDetailError('Failed to load service details.');
+      setSelectedService({
+        ...service,
+        landscrapers: []
+      });
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   const handleOpenDeleteDialog = (service: Service) => {
     setServiceToDelete(service);
     setDeleteDialogOpen(true);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
@@ -224,11 +295,6 @@ export default function ServicesPage() {
     }
   };
 
-  const filteredServices = services.filter(service =>
-    service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    service.category?.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <div className="flex flex-col h-full bg-[#f8fafc]">
       {/* Header */}
@@ -293,14 +359,32 @@ export default function ServicesPage() {
                 className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20 focus:border-[#0f172a] transition-all text-sm"
                 placeholder="Search services by name or category..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
               />
             </div>
           </div>
 
           {loading ? (
-            <div className="flex justify-center py-20">
-              <CircularProgress sx={{ color: '#0f172a' }} />
+            <div className="animate-pulse space-y-6">
+              {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="h-36 bg-white rounded-2xl border border-gray-100" />
+                <div className="h-36 bg-white rounded-2xl border border-gray-100" />
+                <div className="h-36 bg-white rounded-2xl border border-gray-100" />
+                <div className="h-36 bg-white rounded-2xl border border-gray-100" />
+              </div> */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-100">
+                <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 py-3">
+                    <div className="w-12 h-12 bg-gray-200 rounded-md" />
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-200 rounded w-1/3 mb-2" />
+                      <div className="h-3 bg-gray-200 rounded w-1/2" />
+                    </div>
+                    <div className="w-20 h-4 bg-gray-200 rounded" />
+                  </div>
+                ))}
+              </div>
             </div>
           ) : error ? (
             <Alert severity="error">{error}</Alert>
@@ -320,7 +404,7 @@ export default function ServicesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredServices.map((service) => (
+                  {services.map((service) => (
                     <tr key={service._id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                       <td className="py-4 px-2">
                         <div className="flex items-center gap-3">
@@ -369,6 +453,13 @@ export default function ServicesPage() {
                       </td>
                     </tr>
                   ))}
+                  {services.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="py-8 text-center text-gray-500">
+                        No services found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -543,8 +634,12 @@ export default function ServicesPage() {
       {/* Detail Modal */}
       <Dialog
         open={detailModalOpen}
-        onClose={() => setDetailModalOpen(false)}
-        maxWidth="sm"
+        onClose={() => {
+          setDetailModalOpen(false);
+          setDetailLoading(false);
+          setDetailError('');
+        }}
+        maxWidth="md"
         fullWidth
         slotProps={{
           paper: { sx: { borderRadius: 6, bgcolor: 'white' } }
@@ -555,51 +650,69 @@ export default function ServicesPage() {
             <Typography variant="h5" sx={{ fontWeight: '700', color: '#1e293b' }}>Service Details</Typography>
             <Typography variant="body2" sx={{ color: '#94a3b8' }}>Complete service information</Typography>
           </Box>
-          <IconButton onClick={() => setDetailModalOpen(false)} size="small">
+          <IconButton onClick={() => {
+            setDetailModalOpen(false);
+            setDetailLoading(false);
+            setDetailError('');
+          }} size="small">
             <CloseIcon />
           </IconButton>
         </DialogTitle>
 
         <DialogContent sx={{ px: 4, mt: 2, py: 4 }}>
-          {selectedService && (
+          {detailLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+              <CircularProgress sx={{ color: '#0f172a' }} />
+            </Box>
+          ) : detailError ? (
+            <Alert severity="error">{detailError}</Alert>
+          ) : selectedService ? (
             <Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 4 }}>
-                <Avatar
-                  src={selectedService.icon}
-                  variant="rounded"
-                  sx={{ width: 80, height: 80, bgcolor: '#f1f5f9', p: 1 }}
-                />
-                <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 'bold' }} color="#1e293b">{selectedService.name}</Typography>
-                  <Chip
-                    label={selectedService.category?.name}
-                    size="small"
-                    sx={{ mt: 1, fontWeight: 'bold', bgcolor: '#f1f5f9', color: '#475569' }}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 3, mb: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                  <Avatar
+                    src={selectedService.icon}
+                    variant="rounded"
+                    sx={{ width: 80, height: 80, bgcolor: '#f1f5f9', p: 1 }}
                   />
+                  <Box>
+                    <Typography variant="h5" sx={{ fontWeight: 'bold' }} color="#1e293b">{selectedService.name}</Typography>
+                    <Chip
+                      label={selectedService.category?.name}
+                      size="small"
+                      sx={{ mt: 1, fontWeight: 'bold', bgcolor: '#f1f5f9', color: '#475569' }}
+                    />
+                  </Box>
+                </Box>
+                <Box>
+                  <span className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${selectedService.status === 'active' ? 'bg-black text-white' : 'bg-gray-100 text-gray-500'
+                    }`}>
+                    {selectedService.status}
+                  </span>
                 </Box>
               </Box>
- 
+
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12 }}>
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>Description</Typography>
                   <Typography variant="body1" color="#475569" sx={{ mt: 0.5 }}>{selectedService.description}</Typography>
                 </Grid>
- 
+
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>Price</Typography>
                   <Typography variant="h6" sx={{ fontWeight: 'bold' }} color="#0f172a">${selectedService.price}</Typography>
                 </Grid>
- 
+
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>Pricing Type</Typography>
                   <Typography variant="body1" sx={{ mt: 0.5, textTransform: 'capitalize' }}>{selectedService.pricingType?.replace('_', ' ')}</Typography>
                 </Grid>
- 
+
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>Total Requests</Typography>
                   <Typography variant="body1" sx={{ mt: 0.5, fontWeight: 'bold' }}>{selectedService.requests || 0}</Typography>
                 </Grid>
- 
+
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>Total Revenue</Typography>
                   <Typography variant="body1" sx={{ mt: 0.5, fontWeight: 'bold' }} color="#2ECC71">${selectedService.revenue?.toFixed(2) || '0.00'}</Typography>
@@ -607,20 +720,71 @@ export default function ServicesPage() {
 
                 <Grid size={{ xs: 12 }}>
                   <Divider sx={{ my: 1 }} />
-                  <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold', mb: 1, display: 'block' }}>Assigned Landscrapers ({selectedService.landscrapers?.length || 0})</Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {selectedService.landscrapers?.length > 0 ? (
-                      selectedService.landscrapers.map((id, index) => (
-                        <Chip key={index} label={`ID: ${id.slice(-6)}`} size="small" variant="outlined" />
-                      ))
-                    ) : (
-                      <Typography variant="body2" color="textSecondary">No landscrapers assigned yet.</Typography>
-                    )}
-                  </Box>
+                  <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold', mb: 2, display: 'block' }}>
+                    Assigned Landscrapers ({selectedService.landscrapers?.length || 0})
+                  </Typography>
+
+                  {selectedService.landscrapers?.length ? (
+                    <Grid container spacing={3}>
+                      {selectedService.landscrapers.map((landscraper) => (
+                        <Grid size={{ xs: 12, sm: 4 }}
+                          key={landscraper._id}
+                          sx={{
+                            border: '1px solid #e2e8f0',
+                            borderRadius: 3,
+                            p: 1.5,
+                            bgcolor: '#f8fafc'
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, alignItems: 'flex-start', mb: 1 }}>
+                            {landscraper.profile ? (
+                              <img src={landscraper.profile} alt={landscraper.name} className="w-10 h-10 rounded-full object-cover" />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-[#82b83b] flex items-center justify-center text-white font-bold text-lg">
+                                {landscraper.name.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            <Box>
+                              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0f172a', textTransform: 'capitalize' }}>
+                                {landscraper.name}
+                              </Typography>
+                              <Typography variant="body2" color="textSecondary">
+                                {landscraper.email}
+                              </Typography>
+                            </Box>
+                            <Chip
+                              label={landscraper.status}
+                              size="small"
+                              sx={{ fontWeight: 'bold', bgcolor: '#e2e8f0', color: '#0f172a' }}
+                            />
+                          </Box>
+
+                          <Typography variant="body2" color="textSecondary" >
+                            {landscraper.phone}
+                          </Typography>
+                          {/* 
+                          <Grid container spacing={2}>
+                            <Grid size={{ xs: 6 }}>
+                              <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}>
+                                Average rating
+                              </Typography>
+                              <Typography variant="body1" sx={{ mt: 0.5, fontWeight: 600 }}>
+                                {landscraper.averageRating ?? 0}
+                              </Typography>
+                            </Grid>
+                          </Grid> */}
+                        </Grid>
+                      ))}
+                    </Grid>
+                  ) : (
+                    <Typography variant="body2" color="textSecondary">
+                      No landscrapers assigned yet.
+                    </Typography>
+                  )}
                 </Grid>
               </Grid>
             </Box>
-          )}
+          ) : null}
         </DialogContent>
       </Dialog>
 
