@@ -287,7 +287,7 @@ export default function SubscriptionPage() {
                   </Box>
                   <Box>
                     <Typography variant="body2" color="textSecondary" sx={{ fontWeight: "500" }}>{stat.label}</Typography>
-                    <Typography variant="h5" sx={{ fontWeight: "bold" }} color="#1e293b">{stat.value}</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: "bold", color: stat.color }} >{stat.value}</Typography>
                   </Box>
                 </Box>
               </Grid>
