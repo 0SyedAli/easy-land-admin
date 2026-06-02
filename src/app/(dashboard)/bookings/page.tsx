@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import NotificationsNone from '@mui/icons-material/NotificationsNone';
 import Search from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import StarIcon from '@mui/icons-material/Star';
 import {
   IconButton,
   CircularProgress,
@@ -48,6 +48,7 @@ interface Booking {
     averageRating: number;
     totalReviews: number;
     location: { address: string };
+    pricingPerKm: number;
   };
   scheduledAt: string;
   status: string;
@@ -406,6 +407,10 @@ export default function BookingsPage() {
                       <Typography variant="body2" sx={{ fontWeight: "500" }}>{selectedBooking.customer?.name}</Typography>
                     </Box>
                     <Box sx={{ mb: 2 }}>
+                      <Typography variant="caption" color="textSecondary">Email</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "500" }}>{selectedBooking.customer?.email}</Typography>
+                    </Box>
+                    <Box sx={{ mb: 2 }}>
                       <Typography variant="caption" color="textSecondary">Phone</Typography>
                       <Typography variant="body2" sx={{ fontWeight: "500" }}>{selectedBooking.customer?.phone}</Typography>
                     </Box>
@@ -426,14 +431,22 @@ export default function BookingsPage() {
                       <Box>
                         <Typography variant="body2" sx={{ fontWeight: '700' }}>{selectedBooking.provider?.name}</Typography>
                         <Box sx={{ display: 'flex', alignItems: 'center', color: '#f59e0b' }}>
-                          <span className="text-xs mr-1">★</span>
-                          <Typography variant="caption" sx={{ fontWeight: 'bold' }}>4.9 • 203 jobs</Typography>
+                          <StarIcon className="mr-1" sx={{ fontSize: '1rem' }} />
+                          <Typography variant="caption" sx={{ fontWeight: 'bold', marginTop: "2px" }}>4.9 • 203 jobs</Typography>
                         </Box>
                       </Box>
                     </Box>
-                    <Box>
-                      <Typography variant="caption" color="textSecondary">Distance</Typography>
-                      <Typography variant="body2" sx={{ fontWeight: "500" }}>1.8 miles</Typography>
+                    <Box sx={{ mb: 1 }}>
+                      <Typography variant="caption" color="textSecondary">Email</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "500" }}>{selectedBooking?.provider?.email}</Typography>
+                    </Box>
+                    <Box sx={{ mb: 1 }}>
+                      <Typography variant="caption" color="textSecondary">Phone</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "500" }}>{selectedBooking?.provider?.phone}</Typography>
+                    </Box>
+                    <Box >
+                      <Typography variant="caption" color="textSecondary">Pricing/km</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: "500" }}>${selectedBooking?.provider?.pricingPerKm}</Typography>
                     </Box>
                   </Box>
                 </Grid>
@@ -464,10 +477,10 @@ export default function BookingsPage() {
                           ${selectedBooking.amount || selectedBooking.service?.price}
                         </Typography>
                       </Grid>
-                      <Grid size={8}>
+                      {/* <Grid size={8}>
                         <Typography variant="caption" color="textSecondary">Location</Typography>
                         <Typography variant="body2" sx={{ fontWeight: "500" }}>30.2775, -97.7403</Typography>
-                      </Grid>
+                      </Grid> */}
                     </Grid>
                   </Box>
                 </Grid>

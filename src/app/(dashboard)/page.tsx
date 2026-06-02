@@ -204,7 +204,7 @@ const ServiceDistributionChart = ({ services }: { services: ServiceDistributionI
     const midAngle = startAngle + angle / 2;
     const rad = ((midAngle - 90) * Math.PI) / 180;
 
-    const labelR = 115;
+    const labelR = 95;
     const tx = 200 + labelR * Math.cos(rad);
     const ty = 140 + labelR * Math.sin(rad);
 

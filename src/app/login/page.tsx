@@ -29,7 +29,6 @@ export default function LoginPage() {
       const token = response.data.token || response.data.data?.token || 'dummy_token_if_none_provided';
       Cookies.set('token', token, { expires: 7 });
       localStorage.setItem('token', token);
-
       router.push('/');
     } catch (err: any) {
       console.error('Login error:', err);

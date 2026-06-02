@@ -296,7 +296,7 @@ export default function ServicesPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#f8fafc]">
+    <div className="flex flex-col h-full bg-[#f8fafc] mb-0">
       {/* Header */}
       <div className="flex justify-between items-start mb-8 pb-0">
         <div>
@@ -335,7 +335,7 @@ export default function ServicesPage() {
             { label: 'Total Revenue', value: `$${services.reduce((acc, curr) => acc + (curr.revenue || 0), 0).toFixed(2)}`, color: '#2ECC71', bg: '#e8f5e9' },
             { label: 'Total Requests', value: services.reduce((acc, curr) => acc + (curr.requests || 0), 0), color: '#3498DB', bg: '#e3f2fd' },
           ].map((stat, i) => (
-            <Grid key={i} size={{ xs: 12, sm: 6, md: 3 }}>
+            <Grid key={i} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
               <Box className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                 <Typography variant="body2" color="textSecondary" sx={{ fontWeight: '500', mb: 1 }}>{stat.label}</Typography>
                 <Typography variant="h4" sx={{ fontWeight: '800', color: stat.color }}>{stat.value}</Typography>
@@ -721,7 +721,7 @@ export default function ServicesPage() {
                 <Grid size={{ xs: 12 }}>
                   <Divider sx={{ my: 1 }} />
                   <Typography variant="caption" color="textSecondary" sx={{ textTransform: 'uppercase', fontWeight: 'bold', mb: 2, display: 'block' }}>
-                    Assigned Landscrapers ({selectedService.landscrapers?.length || 0})
+                    Assigned Providers ({selectedService.landscrapers?.length || 0})
                   </Typography>
 
                   {selectedService.landscrapers?.length ? (
@@ -736,14 +736,14 @@ export default function ServicesPage() {
                             bgcolor: '#f8fafc'
                           }}
                         >
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, alignItems: 'flex-start', mb: 1 }}>
-                            {landscraper.profile ? (
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, alignItems: 'flex-start', mb: 1,position: 'relative' }}>
+                            {/* {landscraper.profile ? (
                               <img src={landscraper.profile} alt={landscraper.name} className="w-10 h-10 rounded-full object-cover" />
                             ) : (
                               <div className="w-10 h-10 rounded-full bg-[#82b83b] flex items-center justify-center text-white font-bold text-lg">
                                 {landscraper.name.charAt(0).toUpperCase()}
                               </div>
-                            )}
+                            )} */}
                             <Box>
                               <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#0f172a', textTransform: 'capitalize' }}>
                                 {landscraper.name}
@@ -755,7 +755,7 @@ export default function ServicesPage() {
                             <Chip
                               label={landscraper.status}
                               size="small"
-                              sx={{ fontWeight: 'bold', bgcolor: '#e2e8f0', color: '#0f172a' }}
+                              sx={{ fontWeight: 'bold', bgcolor: '#e2e8f0', color: '#0f172a', position: 'absolute', top: 3, right: 3, textTransform: 'capitalize' }}
                             />
                           </Box>
 

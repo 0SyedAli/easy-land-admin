@@ -22,6 +22,7 @@ import {
 } from '@mui/material';
 import DeleteOutlineOutlined from '@mui/icons-material/DeleteOutlineOutlined';
 import api from '@/lib/api';
+import { RemoveRedEye } from '@mui/icons-material';
 
 interface User {
   _id: string;
@@ -241,30 +242,30 @@ export default function UsersPage() {
                     <tr
                       key={user._id}
                       className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={() => handleRowClick(user)}
+                      
                     >
-                      <td className="py-4 flex items-center gap-3">
+                      <td className="py-4 px-2 flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-teal-400 flex items-center justify-center text-white font-bold text-lg">
                           {user.name.charAt(0).toUpperCase()}
                         </div>
                         <span className="font-medium text-gray-800">{user.name}</span>
                       </td>
-                      <td className="py-4 text-gray-600 text-sm">{user.phone || '-'}</td>
-                      <td className="py-4 text-gray-600 text-sm max-w-[200px] truncate" title={user.location?.address}>
+                      <td className="py-4 px-2 text-gray-600 text-sm">{user.phone || '-'}</td>
+                      <td className="py-4 px-2 text-gray-600 text-sm max-w-[200px] truncate" title={user.location?.address}>
                         {user.location?.address || '-'}
                       </td>
-                      <td className="py-4 text-gray-600 text-sm capitalize">{user.property || '-'}</td>
-                      <td className="py-4 text-gray-600 text-sm">{user.totalJobs}</td>
-                      <td className="py-4 text-gray-600 text-sm">
+                      <td className="py-4 px-2 text-gray-600 text-sm capitalize">{user.property || '-'}</td>
+                      <td className="py-4 px-2 text-gray-600 text-sm">{user.totalJobs}</td>
+                      <td className="py-4 px-2 text-gray-600 text-sm">
                         {new Date(user.createdAt).toLocaleDateString('en-CA')}
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 px-2">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium text-white ${user.status === 'active' ? 'bg-[#0f172a]' : 'bg-red-500'
                           }`}>
                           {user.status}
                         </span>
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-4 px-2 text-center">
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <Switch
                             checked={user.status === 'active'}
@@ -284,6 +285,12 @@ export default function UsersPage() {
                             sx={{ color: '#ef4444', ml: 1 }}
                           >
                             <DeleteOutlineOutlined />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => handleRowClick(user)}
+                            sx={{ color: '#ddd', ml: 1 }}
+                          >
+                            <RemoveRedEye />
                           </IconButton>
                         </Box>
                       </td>
@@ -351,7 +358,7 @@ export default function UsersPage() {
                   {selectedUser.name.charAt(0).toUpperCase()}
                 </Box>
                 <Box>
-                  <Typography variant="h5" sx={{ fontWeight: '700', color: '#1e293b', mb: 0.5 }}>
+                  <Typography variant="h5" sx={{ fontWeight: '700', color: '#1e293b', mb: 0.5 }} style={{ textTransform: 'capitalize' }}>
                     {selectedUser.name}
                   </Typography>
                   <span className="px-3 py-1 rounded-md text-xs font-bold bg-[#0f172a] text-white uppercase tracking-wider">
@@ -364,32 +371,32 @@ export default function UsersPage() {
               <Grid container spacing={4}>
                 <Grid size={6}>
                   <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Phone</Typography>
-                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '600' }}>{selectedUser.phone || 'N/A'}</Typography>
+                  <Typography variant="body1"  sx={{ fontWeight: '400' }}>{selectedUser.phone || 'N/A'}</Typography>
                 </Grid>
                 <Grid size={6}>
                   <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Land Type</Typography>
-                  <Typography variant="body1" color="#334155" sx={{ textTransform: 'capitalize', fontWeight: '600' }}>{selectedUser.property || 'N/A'}</Typography>
+                  <Typography variant="body1" color="#334155" sx={{ textTransform: 'capitalize', fontWeight: '400' }}>{selectedUser.property || 'N/A'}</Typography>
                 </Grid>
 
                 <Grid size={12}>
                   <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Address</Typography>
-                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '600' }}>{selectedUser.location?.address || 'N/A'}</Typography>
+                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '400' }}>{selectedUser.location?.address || 'N/A'}</Typography>
                 </Grid>
 
                 <Grid size={6}>
                   <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Total Bookings</Typography>
-                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '600' }}>{selectedUser.totalJobs || 0}</Typography>
+                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '400' }}>{selectedUser.totalJobs || 0}</Typography>
                 </Grid>
                 <Grid size={6}>
                   <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Join Date</Typography>
-                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '600' }}>
+                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '400' }}>
                     {new Date(selectedUser.createdAt).toISOString().split('T')[0]}
                   </Typography>
                 </Grid>
 
                 <Grid size={12}>
                   <Typography variant="caption" color="#94a3b8" sx={{ textTransform: 'uppercase', mb: 0.5, display: 'block', fontWeight: 'bold' }}>Location</Typography>
-                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '600' }}>
+                  <Typography variant="body1" color="#334155" sx={{ fontWeight: '400' }}>
                     {/* Mock coordinates if not available to match design */}
                     30.2672, -97.7431
                   </Typography>

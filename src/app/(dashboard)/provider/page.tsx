@@ -243,14 +243,14 @@ export default function ProviderPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-gray-200 text-sm text-gray-500">
-                    <th className="pb-3 font-semibold">Provider</th>
-                    <th className="pb-3 font-semibold">Contact</th>
-                    <th className="pb-3 font-semibold">Address</th>
-                    <th className="pb-3 font-semibold">Services</th>
-                    <th className="pb-3 font-semibold">Earnings</th>
-                    <th className="pb-3 font-semibold">Join Date</th>
-                    <th className="pb-3 font-semibold">Status</th>
-                    <th className="pb-3 font-semibold text-center">Action</th>
+                    <th className="pb-3 px-2 font-semibold">Provider</th>
+                    <th className="pb-3 px-2 font-semibold">Phone</th>
+                    <th className="pb-3 px-2 font-semibold">Address</th>
+                    <th className="pb-3 px-2 font-semibold">Services</th>
+                    <th className="pb-3 px-2 font-semibold">Earnings</th>
+                    <th className="pb-3 px-2 font-semibold">Join Date</th>
+                    <th className="pb-3 px-2 font-semibold">Status</th>
+                    <th className="pb-3 px-2 font-semibold text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -260,7 +260,7 @@ export default function ProviderPage() {
                       className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
                     // onClick={() => handleRowClick(provider)}
                     >
-                      <td className="py-4 flex items-center gap-3">
+                      <td className="py-4 px-2 flex items-center gap-3">
                         {provider.profile ? (
                           // <img src={provider.profile} alt={provider.name} className="w-10 h-10 rounded-full object-cover" />
                           <Avatar
@@ -276,24 +276,24 @@ export default function ProviderPage() {
                         )}
                         <span className="font-medium text-gray-800">{provider.name}</span>
                       </td>
-                      <td className="py-4 text-gray-600 text-sm">{provider.phone || '-'}</td>
-                      <td className="py-4 text-gray-600 text-sm max-w-[200px] truncate" title={provider.location?.address}>
+                      <td className="py-4 px-2 text-gray-600 text-sm">{provider.phone || '-'}</td>
+                      <td className="py-4 px-2 text-gray-600 text-sm max-w-[200px] truncate" title={provider.location?.address}>
                         {provider.location?.address || '-'}
                       </td>
-                      <td className="py-4 text-gray-600 text-sm">
+                      <td className="py-4 px-2 text-gray-600 text-sm">
                         {provider.services?.length || 0} services
                       </td>
-                      <td className="py-4 text-gray-600 text-sm">${provider.totalEarnings || 0}</td>
-                      <td className="py-4 text-gray-600 text-sm">
+                      <td className="py-4 px-2 text-gray-600 text-sm">${provider.totalEarnings || 0}</td>
+                      <td className="py-4 px-2 text-gray-600 text-sm">
                         {new Date(provider.createdAt).toLocaleDateString('en-CA')}
                       </td>
-                      <td className="py-4">
+                      <td className="py-4 px-2">
                         <span className={`px-3 py-1 rounded-lg text-[10px] font-bold text-white uppercase tracking-wider ${provider.status === 'active' ? 'bg-[#0f172a]' : 'bg-orange-500'
                           }`}>
                           {provider.status}
                         </span>
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-4 px-2 text-center">
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
                           <button
                             onClick={() => handleRowClick(provider)}
@@ -403,6 +403,10 @@ export default function ProviderPage() {
                   <Typography variant="caption" sx={{ fontWeight: '600', color: '#94a3b8', display: 'block', mb: 0.5 }}>Phone</Typography>
                   <Typography variant="body2" sx={{ fontWeight: '500', color: '#334155' }}>{selectedProvider.phone || 'N/A'}</Typography>
                 </Grid>
+                <Grid size={{ xs: 12 }}>
+                  <Typography variant="caption" sx={{ fontWeight: '600', color: '#94a3b8', display: 'block', mb: 0.5 }}>Address</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: '500', color: '#334155' }}>{selectedProvider.location.address || 'N/A'}</Typography>
+                </Grid>
 
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" sx={{ fontWeight: '600', color: '#94a3b8', display: 'block', mb: 0.5 }}>Total Earnings</Typography>
@@ -416,8 +420,8 @@ export default function ProviderPage() {
                 </Grid>
 
                 <Grid size={{ xs: 6 }}>
-                  <Typography variant="caption" sx={{ fontWeight: '600', color: '#94a3b8', display: 'block', mb: 0.5 }}>Distance</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: '500', color: '#334155' }}>2.3 miles</Typography>
+                  <Typography variant="caption" sx={{ fontWeight: '600', color: '#94a3b8', display: 'block', mb: 0.5 }}>Pricing / Km</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: '500', color: '#334155' }}>{selectedProvider.pricingPerKm || 'N/A'}</Typography>
                 </Grid>
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" sx={{ fontWeight: '600', color: '#94a3b8', display: 'block', mb: 0.5 }}>Completed Jobs</Typography>

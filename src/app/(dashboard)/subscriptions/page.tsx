@@ -257,12 +257,12 @@ export default function SubscriptionPage() {
 
       {/* Stats Cards */}
       <Box sx={{ mb: 4 }}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {loading ? (
             // show skeletons for the top stat cards while loading
             Array.from({ length: 4 }).map((_, i) => (
-              <Grid key={i} size={{ xl: 'grow', lg: 3, sm: 6 }}>
-                <div className="bg-white rounded-3xl p-6 border border-gray-100/80 shadow-xs flex flex-col justify-between h-[100px] animate-pulse">
+              <Grid key={i} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+                <div className="bg-white rounded-3xl p-3 border border-gray-100/80 shadow-xs flex flex-col justify-between  animate-pulse">
                   <div className="flex justify-between items-start">
                     <div className="w-12 h-12 bg-gray-200 rounded-2xl"></div>
                     <div className="space-y-3 w-2/3">
@@ -270,7 +270,6 @@ export default function SubscriptionPage() {
                       <div className="h-8 bg-gray-200 rounded w-1/2"></div>
                     </div>
                   </div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mt-4"></div>
                 </div>
               </Grid>
             ))
@@ -281,9 +280,9 @@ export default function SubscriptionPage() {
               { label: 'Active Plans', value: stats?.activePlansCount || 0, icon: <FactCheckIcon />, color: '#9c27b0', bg: '#f3e5f5' },
               { label: 'Active Subscribers', value: stats?.activeSubscribersCount || 0, icon: <TimelineIcon />, color: '#ff9800', bg: '#fff3e0' },
             ].map((stat, i) => (
-              <Grid key={i} size={{ xs: 12, sm: 6, md: 3 }}>
-                <Box className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-                  <Box sx={{ bgcolor: stat.bg, p: 1.5, borderRadius: 3, color: stat.color, display: 'flex' }}>
+              <Grid key={i} size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+                <Box className="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-2">
+                  <Box sx={{ bgcolor: stat.bg, p: 1, borderRadius: 3, color: stat.color, display: 'flex' }}>
                     {stat.icon}
                   </Box>
                   <Box>
@@ -299,8 +298,8 @@ export default function SubscriptionPage() {
 
       {/* Search & Filters */}
       <Box sx={{ mb: 4 }}>
-        <Box className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-          <div className="relative flex-1">
+        <Box className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 w-fit">
+          {/* <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="text-gray-400" />
             </div>
@@ -311,7 +310,7 @@ export default function SubscriptionPage() {
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
-          </div>
+          </div> */}
           <Box className="flex bg-gray-50 p-1 rounded-xl">
             {['all', 'active', 'inactive'].map((filter) => (
               <button
@@ -330,11 +329,11 @@ export default function SubscriptionPage() {
       {/* Plan Cards Grid */}
       <Box sx={{ flex: 1 }}>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={2}>
           {loading ? (
             Array.from({ length: 3 }).map((_, i) => (
               <Grid key={i} size={{ xl: 'grow', lg: 3, sm: 6 }}>
-                <div className="bg-white rounded-3xl p-6 border border-gray-100/80 shadow-xs flex flex-col justify-between h-[500px] animate-pulse">
+                <div className="bg-white rounded-3xl p-5 border border-gray-100/80 shadow-xs flex flex-col justify-between h-[500px] animate-pulse">
                   <div className="flex justify-between items-start">
                     <div className="space-y-3 w-2/3">
                       <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -351,9 +350,9 @@ export default function SubscriptionPage() {
           ) : (
             filteredPlans.map((plan) => (
               <Grid key={plan._id} size={{ xs: 12, md: 4 }}>
-                <Box className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 h-full flex flex-col relative transition-all hover:shadow-lg hover:border-gray-200">
+                <Box className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 h-full flex flex-col relative transition-all hover:shadow-lg hover:border-gray-200">
                   {/* Status Badge & Toggle */}
-                  <Box sx={{ position: 'absolute', top: 32, right: 32, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ position: 'absolute', top: 25, right: 25, display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Switch
                       size="small"
                       checked={plan.status === 'active'}
@@ -363,10 +362,7 @@ export default function SubscriptionPage() {
                         '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#000' },
                       }}
                     />
-                    <span className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${plan.status === 'active' ? 'bg-black text-white' : 'bg-gray-100 text-gray-500'
-                      }`}>
-                      {plan.status}
-                    </span>
+
                   </Box>
 
                   {/* Icon & Title */}
@@ -379,14 +375,24 @@ export default function SubscriptionPage() {
                   </Box>
 
                   {/* Description */}
-                  <Typography variant="body2" color="textSecondary" sx={{ mb: 4, height: 40, overflow: 'hidden' }}>
+                  <Typography variant="body2" color="textSecondary" sx={{ mb: 2, overflow: 'hidden' }}>
                     {plan.description}
                   </Typography>
 
                   {/* Price */}
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="h5" component="span" sx={{ fontWeight: '800' }} color="#1e293b">${plan.price}</Typography>
-                    <Typography variant="body2" component="span" color="textSecondary"> / {plan.billingCycle}</Typography>
+
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, mb: 2 }}>
+                    <Box >
+                      <Typography variant="h5" component="span" sx={{ fontWeight: '800' }} color="#1e293b">${plan.price}</Typography>
+                      <Typography variant="body2" component="span" color="textSecondary"> / {plan.billingCycle}</Typography>
+                    </Box>
+                    <Box >
+                      <span className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${plan.status === 'active' ? 'bg-black text-white' : 'bg-gray-100 text-gray-500'
+                        }`}>
+                        {plan.status}
+                      </span>
+                    </Box>
                   </Box>
 
                   {/* Subscribers */}

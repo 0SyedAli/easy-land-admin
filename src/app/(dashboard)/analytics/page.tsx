@@ -212,7 +212,7 @@ export default function Analytics() {
                         />
                         <StatCard
                             title="Avg Order Value"
-                            value={performance ? formatCurrency(performance.averageOrderValue.value) : '—'}
+                            value={performance ? performance.averageOrderValue.value : '—'}
                             change={performance ? performance.averageOrderValue.change : { value: 0, type: 'currency', period: '' }}
                             icon={<AttachMoney fontSize="medium" />}
                             iconBgColor="bg-blue-500"
