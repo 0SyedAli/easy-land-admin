@@ -376,7 +376,7 @@ export default function Analytics() {
                                         <div className="text-sm text-gray-600">{s.name}</div>
                                         <div className="text-xs text-gray-400">{s.bookings} bookings</div>
                                     </div>
-                                    <div className="text-sm font-bold">{s.percentage}%</div>
+                                    <div className="text-sm font-bold text-gray-900" >{s.percentage}%</div>
                                 </div>
                             </div>
                         ))

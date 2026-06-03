@@ -371,7 +371,7 @@ export default function SubscriptionPage() {
                       plan.tier === 'pro' ? <StarOutlineIcon sx={{ color: '#9c27b0' }} /> :
                         plan.tier === 'basic' ? <TaskAltIcon sx={{ color: '#2196f3' }} /> :
                           <TaskAltIcon sx={{ color: '#2196f3' }} />}
-                    <Typography variant="h5" sx={{ fontWeight: "bold" }} color="#1e293b">{plan.name}</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: "bold", color:"#1e293b" }} >{plan.name}</Typography>
                   </Box>
 
                   {/* Description */}
@@ -384,7 +384,7 @@ export default function SubscriptionPage() {
 
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, mb: 2 }}>
                     <Box >
-                      <Typography variant="h5" component="span" sx={{ fontWeight: '800' }} color="#1e293b">${plan.price}</Typography>
+                      <Typography variant="h5" component="span" sx={{ fontWeight: '800', color: '#1e293b' }} >${plan.price}</Typography>
                       <Typography variant="body2" component="span" color="textSecondary"> / {plan.billingCycle}</Typography>
                     </Box>
                     <Box >
@@ -420,12 +420,12 @@ export default function SubscriptionPage() {
 
                   {/* Features */}
                   <Box sx={{ flex: 1 }}>
-                    <Typography variant="body2" color="#1e293b" sx={{ mb: 2, fontWeight: 'bold' }}>Features:</Typography>
+                    <Typography variant="body2"  sx={{ mb: 2, fontWeight: 'bold', color: '#1e293b' }}>Features:</Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                       {plan.features.slice(0, 3).map((feature, i) => (
                         <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                           <CheckCircleIcon sx={{ color: '#4caf50', fontSize: 18 }} />
-                          <Typography variant="body2" color="#475569" sx={{ fontSize: '13px' }}>{feature}</Typography>
+                          <Typography variant="body2" color="textSecondary" sx={{ fontSize: '13px' }}>{feature}</Typography>
                         </Box>
                       ))}
                       {plan.features.length > 3 && (
