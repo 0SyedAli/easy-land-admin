@@ -54,6 +54,7 @@ export default function Sidebar() {
                 ? 'bg-[#82b83b] text-white'
                 : 'text-green-100 hover:bg-[#3f842d] hover:text-white'
                 }`}
+                style={{ marginBottom: '2px' }}
             >
               {item.icon}
               <span className="font-medium text-sm">{item.text}</span>
