@@ -421,7 +421,7 @@ export default function ProviderPage() {
 
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" sx={{ fontWeight: '600', color: '#94a3b8', display: 'block', mb: 0.5 }}>Pricing / Km</Typography>
-                  <Typography variant="body2" sx={{ fontWeight: '500', color: '#334155' }}>{selectedProvider.pricingPerKm || 'N/A'}</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: '500', color: '#334155' }}>${selectedProvider.pricingPerKm || '0'}</Typography>
                 </Grid>
                 <Grid size={{ xs: 6 }}>
                   <Typography variant="caption" sx={{ fontWeight: '600', color: '#94a3b8', display: 'block', mb: 0.5 }}>Completed Jobs</Typography>
