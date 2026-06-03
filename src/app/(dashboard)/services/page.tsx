@@ -356,7 +356,7 @@ export default function ServicesPage() {
               </div>
               <input
                 type="text"
-                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20 focus:border-[#0f172a] transition-all text-sm"
+                className=" text-gray-900  w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20 focus:border-[#0f172a] transition-all text-sm"
                 placeholder="Search services by name or category..."
                 value={searchTerm}
                 onChange={(e) => handleSearchChange(e.target.value)}

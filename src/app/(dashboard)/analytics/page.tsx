@@ -186,7 +186,7 @@ export default function Analytics() {
         <div className="flex flex-col space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold">Analytics</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-1">Analytics</h1>
                     <p className="text-sm text-gray-500">Overview of platform performance</p>
                 </div>
             </div>

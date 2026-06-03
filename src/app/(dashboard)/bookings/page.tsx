@@ -238,7 +238,7 @@ export default function BookingsPage() {
             </div>
             <input
               type="text"
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2f6f1f]/20 focus:border-[#2f6f1f] transition-all"
+              className="text-gray-900 w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2f6f1f]/20 focus:border-[#2f6f1f] transition-all"
               placeholder="Search by booking ID, user, provider, or service..."
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}

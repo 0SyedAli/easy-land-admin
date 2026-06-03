@@ -191,7 +191,7 @@ export default function UsersPage() {
           </div>
           <input
             type="text"
-            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2f6f1f]/20 focus:border-[#2f6f1f] transition-all"
+            className="w-full text-gray-900 pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2f6f1f]/20 focus:border-[#2f6f1f] transition-all"
             placeholder="Search by name, phone, or address..."
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
