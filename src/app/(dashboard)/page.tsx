@@ -317,53 +317,8 @@ const ServiceDistributionChart = ({ services }: { services: ServiceDistributionI
   );
 };
 
-// Recent Activity List (Mock Data matching layout)
-const mockActivities = [
-  {
-    id: 1,
-    title: 'New booking created',
-    subtitle: 'John Doe',
-    time: '5 min ago',
-    dotColor: 'bg-emerald-500'
-  },
-  {
-    id: 2,
-    title: 'Provider approved',
-    subtitle: 'Mike Smith',
-    time: '15 min ago',
-    dotColor: 'bg-blue-500'
-  },
-  {
-    id: 3,
-    title: 'Job completed',
-    subtitle: 'Sarah Johnson',
-    time: '32 min ago',
-    dotColor: 'bg-emerald-500'
-  },
-  {
-    id: 4,
-    title: 'Payment received',
-    subtitle: 'Tom Wilson',
-    time: '1 hour ago',
-    dotColor: 'bg-emerald-500'
-  },
-  {
-    id: 5,
-    title: 'New user registered',
-    subtitle: 'Emily Brown',
-    time: '2 hours ago',
-    dotColor: 'bg-blue-500'
-  },
-  {
-    id: 6,
-    title: 'Review submitted',
-    subtitle: 'David Lee',
-    time: '3 hours ago',
-    dotColor: 'bg-emerald-500'
-  }
-];
-
-// Helper function to calculate relative time
+// Recent Activity List
+// const RecentActivityList = ({ activities = [] }: { activities?: ActivityLog[] }) => {
 const getRelativeTime = (dateString: string): string => {
   const now = new Date();
   const date = new Date(dateString);
@@ -389,13 +344,11 @@ const getDotColorByType = (type: string): string => {
 };
 
 const RecentActivityList = ({ activities = [] }: { activities?: ActivityLog[] }) => {
-  const displayActivities = activities.length > 0 ? activities : mockActivities;
-
   return (
     <div className="flex-1 flex flex-col justify-between">
-      <div className="divide-y divide-gray-100 flex-1 max-h-[400px] overflow-y-auto pe-2">
-        {(activities.length > 0
-          ? activities.map((act) => (
+      {activities.length > 0 ? (
+        <div className="divide-y divide-gray-100 flex-1 max-h-[400px] overflow-y-auto pe-2">
+          {activities.map((act) => (
             <div key={act._id} className="flex justify-between items-center py-3.5 first:pt-1 last:pb-1">
               <div className="flex gap-4 items-start">
                 <span className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${getDotColorByType(act.type)}`}></span>
@@ -406,21 +359,13 @@ const RecentActivityList = ({ activities = [] }: { activities?: ActivityLog[] })
               </div>
               <span className="text-xs text-gray-400 font-medium">{getRelativeTime(act.createdAt)}</span>
             </div>
-          ))
-          : mockActivities.map((act) => (
-            <div key={act.id} className="flex justify-between items-center py-3.5 first:pt-1 last:pb-1">
-              <div className="flex gap-4 items-start">
-                <span className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${act.dotColor}`}></span>
-                <div>
-                  <h4 className="font-semibold text-gray-800 text-sm tracking-wide">{act.title}</h4>
-                  <p className="text-xs text-gray-400 font-medium mt-0.5">{act.subtitle}</p>
-                </div>
-              </div>
-              <span className="text-xs text-gray-400 font-medium">{act.time}</span>
-            </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center text-gray-500 py-12">
+          <p className="text-sm font-medium">No activities found</p>
+        </div>
+      )}
     </div>
   );
 };
